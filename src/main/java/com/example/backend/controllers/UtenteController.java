@@ -31,7 +31,7 @@ public class UtenteController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> aggiornaUtente(@PathVariable("id") String id, @RequestBody Utente utente) {
-        if(!utenteService.existsByEmail(utente.getEmail())) {
+        if(!utenteService.existsById(Long.parseLong(id))) {
             return new ResponseEntity<>(new ResponseMessage("L'utente non è esistente"), HttpStatus.OK);
         }
         Utente daAggiornare = utenteService.findById(Long.parseLong(id));

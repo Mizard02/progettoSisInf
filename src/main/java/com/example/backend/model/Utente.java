@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Getter
 @Setter
 @EqualsAndHashCode
@@ -19,7 +20,7 @@ import java.util.Date;
 public class Utente implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.TABLE)
     @Column(name = "id", nullable = false, unique = true)
     private long id;
 
@@ -59,5 +60,6 @@ public class Utente implements Serializable {
     @Basic
     @Column(name = "password", nullable = false)
     private String password;
+
 
 }
