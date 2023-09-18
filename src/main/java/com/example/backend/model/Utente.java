@@ -37,9 +37,15 @@ public class Utente implements Serializable {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date data_nascita;
 
+    /*
     @Basic
     @Column(name = "residenza", nullable = false)
     private Residenza residenza;
+     */
+
+    @Basic
+    @Column(name = "residenza", nullable = false)
+    private String residenza;
 
     @Basic
     @Column(name = "IBAN", nullable = false)

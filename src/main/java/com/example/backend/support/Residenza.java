@@ -1,21 +1,21 @@
 package com.example.backend.support;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 
 @Getter
 @Setter
 @ToString
-public class Residenza implements Serializable {
+//@NoArgsConstructor
+//@AllArgsConstructor
+public class Residenza implements Serializable{
 
     private String nazione;
     private String regione;
     private int CAP;
     private String via;
+
 
     public Residenza(String nazione, String regione, int CAP, String via) {
         this.nazione = nazione;
@@ -23,5 +23,17 @@ public class Residenza implements Serializable {
         this.CAP = CAP;
         this.via = via;
     } // AllArgsConstructor
+
+
+
+/*
+    public Residenza() {
+        // Inizializza gli attributi con valori predefiniti o vuoti
+        this.nazione = "";
+        this.regione = "";
+        this.CAP = 0;
+        this.via = "";
+    }
+    */
 
 }

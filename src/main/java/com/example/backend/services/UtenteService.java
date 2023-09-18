@@ -1,10 +1,12 @@
 package com.example.backend.services;
 
+import com.example.backend.configuration.KeycloakCommand;
 import com.example.backend.model.Utente;
 import com.example.backend.repositories.UtenteRepository;
 import com.example.backend.support.UtenteAlreadyExistingException;
 import com.example.backend.support.UtenteNotExistingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,14 +15,37 @@ import java.util.List;
 @Service
 public class UtenteService {
 
+    @Value("${keycloak.auth-server-url}")
+    private String serverUrl;
+    @Value("${keycloak.realm}")
+    private String realm;
+    @Value("${clientid}")
+    private String clientId;
+    @Value("")
+    private String clientSecret;
+    @Value("${usernameadmin}")
+    private String username_admin;
+    @Value("${passwordadmin}")
+    private String password_admin;
+
     @Autowired
     private UtenteRepository utenteRepository;
 
+
+    /*
+    @Transactional
+    public Utente creaUtente(Utente utente) {
+        if (utenteRepository.existsByUsername(utente.getUsername()))
+            throw new UtenteAlreadyExistingException("L'utente con username " +utente.getUsername()+ " è già esistente!");
+        return utenteRepository.save(utente);
+    }//CREATE
+    */
 
     @Transactional
     public Utente creaUtente(Utente utente) {
         if (utenteRepository.existsByUsername(utente.getUsername()))
             throw new UtenteAlreadyExistingException("L'utente con username " +utente.getUsername()+ " è già esistente!");
+        KeycloakCommand.AddUser(utente, utente.getPassword());
         return utenteRepository.save(utente);
     }//CREATE
 
