@@ -13,10 +13,13 @@ import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 
 public  class KeycloakCommand {
@@ -44,7 +47,7 @@ public  class KeycloakCommand {
         // Define user
         UserRepresentation user = new UserRepresentation();
         user.setEnabled(true);
-        user.setUsername(utente.getNome());
+        user.setUsername(utente.getEmail());
         user.setEmail(utente.getEmail());
 
         user.setAttributes(Collections.singletonMap("origin", Arrays.asList("demo")));
@@ -82,10 +85,61 @@ public  class KeycloakCommand {
 
         // Send password reset E-Mail
         // VERIFY_EMAIL, UPDATE_PROFILE, CONFIGURE_TOTP, UPDATE_PASSWORD, TERMS_AND_CONDITIONS
-        //usersRessource.get(userId).executeActionsEmail(Arrays.asList("UPDATE_PASSWORD"));
+        //usersRessource.get(userId).executeActionsEmail(Arrays.asList("VERIFY_EMAIL"));
 
         // Delete User
         //userResource.remove();
+    }
+
+/*
+    public static void RemoveUtente(Utente utente){
+
+        Keycloak keycloak = KeycloakBuilder.builder()
+                .serverUrl(serverUrl)
+                .realm(realm)
+                .grantType(OAuth2Constants.PASSWORD)
+                .clientId(clientId)
+                .clientSecret(clientSecret)
+                .username(username_admin)
+                .password(password_admin)
+                .build();
+
+        String username = utente.getEmail();
+        List<UserRepresentation> userList = keycloak.realm(realm).users().search(username);
+        for (UserRepresentation user : userList) {
+            if (user.getUsername().equals(username)) {
+                keycloak.realm(realm).users().delete(user.getId());
+            }
+        }
+    }//cancellaUtente
+ */
+
+    public static void RemoveUtente(Utente utente) {
+        Keycloak keycloak = KeycloakBuilder.builder()
+                .serverUrl(serverUrl)
+                .realm(realm)
+                .grantType(OAuth2Constants.PASSWORD)
+                .clientId(clientId)
+                .clientSecret(clientSecret)
+                .username(username_admin)
+                .password(password_admin)
+                .build();
+
+        // Get realm
+        RealmResource realmResource = keycloak.realm(realm);
+        UsersResource usersRessource = realmResource.users();
+
+        // Create user (requires manage-users role)
+        UserRepresentation response = usersRessource.search(utente.getEmail()).get(0);
+        //System.out.printf("Repsonse: %s %s%n", response.getStatus(), response.getStatusInfo());
+        //System.out.println(response.getLocation());
+
+
+        UserResource userResource = usersRessource.get(response.getId());
+
+
+        // Delete User
+        userResource.remove();
     }
 
 

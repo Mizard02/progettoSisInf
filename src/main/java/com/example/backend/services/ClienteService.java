@@ -7,10 +7,16 @@ import com.example.backend.model.Utente;
 import com.example.backend.repositories.ClienteRepository;
 import com.example.backend.support.UtenteAlreadyExistingException;
 import com.example.backend.support.UtenteNotExistingException;
+import org.keycloak.OAuth2Constants;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import java.awt.event.KeyAdapter;
 import java.util.List;
 
 @Service
@@ -18,6 +24,17 @@ public class ClienteService {
 
     @Autowired
     ClienteRepository clienteRepository;
+
+    @Autowired
+    EntityManager entityManager;
+
+    private static String username_admin = "admin@gmail.com";
+    private static String password_admin = "admin";
+    private static String clientId = "psw-admin-client";
+    private static String role = "user2";
+    private static String serverUrl = "http://localhost:8080/auth";
+    private static String realm = "psw-realm";
+    private static String clientSecret = "";
 
 
     @Transactional
@@ -28,24 +45,87 @@ public class ClienteService {
         return clienteRepository.save(cliente.getCliente());
     }//CREATE
 
-
-
     @Transactional
-    public void aggiornaCliente(ClienteDTO cliente) {
-        if (!clienteRepository.existsById(cliente.getCliente().getId())) {
-            throw new UtenteNotExistingException("Utente non esistente!");
+    public Cliente aggiornaCliente(String email, String value, String type){
+        try {
+            Cliente c = clienteRepository.findByEmail(email);
+            switch (type) {
+                case "nome":
+                    c.setNome(value);
+                    break;
+                case "cognome":
+                    c.setCognome(value);
+                    break;
+                case "residenza":
+                    c.setResidenza(value);
+                    break;
+                case "IBAN":
+                    c.setIBAN(value);
+                    break;
+                case "saldo punti":
+                    c.setSaldoPunti(Integer.parseInt(value));
+                    break;
+                case "stato":
+                    c.setStatoFedelta(value);
+                    break;
+                case "documento":
+                    c.setDocumento_identita(value);
+                    break;
+                //case "numero":
+                //    c.set(value);
+                //    break;
+                //case "email":
+                //    c.setEmail(value);
+                //    break;
+            }
+            entityManager.flush();
+            return c;
+        } catch (UtenteNotExistingException e) {
+            throw new RuntimeException(e);
         }
-        clienteRepository.save(cliente.getCliente());
-    }//UPDATE
+    }
 
+/*
     @Transactional
-    public Long rimuoviCliente(long idCliente) {
+    public Long rimuoviCliente(String idCliente) {
         if (!clienteRepository.existsById(idCliente))
             throw new UtenteNotExistingException("L'utente con id " +idCliente+ " non esiste!");
         Cliente c = clienteRepository.findById(idCliente);
+        KeycloakCommand.RemoveUtente(c);
         clienteRepository.delete(c);
         return c.getId();
     }//DELETE
+ */
+
+    @Transactional
+    public void rimuoviCliente(String id){
+        Cliente cliente = clienteRepository.findById(Long.parseLong(id));
+        System.out.println("CLIENTE: " + cliente);
+        if (!clienteRepository.existsById(Long.parseLong(id))) {
+            throw new UtenteNotExistingException("Utente non esistente!");
+        }
+
+        Keycloak keycloak = KeycloakBuilder.builder()
+                .serverUrl(serverUrl)
+                .realm(realm)
+                .grantType(OAuth2Constants.PASSWORD)
+                .clientId(clientId)
+                .clientSecret(clientSecret)
+                .username(username_admin)
+                .password(password_admin)
+                .build();
+
+        String username = cliente.getEmail();
+        List<UserRepresentation> userList = keycloak.realm(realm).users().search(username);
+        for (UserRepresentation user : userList) {
+            if (user.getUsername().equals(username)) {
+                keycloak.realm(realm).users().delete(user.getId());
+            }
+        }
+        clienteRepository.delete(cliente);
+    }//cancellaUtente
+
+
 
 
     @Transactional(readOnly = true)

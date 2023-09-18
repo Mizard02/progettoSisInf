@@ -51,16 +51,28 @@ public class ClienteController {
         clienteService.aggiornaCliente(daAggiornare);
         return new ResponseEntity<>(daAggiornare.getId(), HttpStatus.OK);
     }//PUT
+*/
 
- */
+    @PutMapping("/modify")
+    public ResponseEntity aggiornaCliente (@RequestParam String email, String value, String type){
+        try {
+            Cliente cliente = clienteService.aggiornaCliente(email, value, type);
+            return new ResponseEntity(cliente, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ResponseMessage(e.toString()), HttpStatus.BAD_REQUEST);
+        }
+    }
 
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> cancellaCliente(@PathVariable("id") String id) {
+
+    @DeleteMapping("/id")
+    public ResponseEntity<?> cancellaCliente(@RequestParam("id") String id) {
         if(!clienteService.existsById(Long.parseLong(id))) {
             return new ResponseEntity<>(new ResponseMessage("Utente non esistente!"), HttpStatus.OK);
         }
-        return new ResponseEntity<>(clienteService.rimuoviCliente(Long.parseLong(id)), HttpStatus.OK);
+        //Long l = clienteService.rimuoviCliente(Long.parseLong(id));
+        clienteService.rimuoviCliente(id);
+        return new ResponseEntity<>(id, HttpStatus.OK);
     }//DELETE
 
 
