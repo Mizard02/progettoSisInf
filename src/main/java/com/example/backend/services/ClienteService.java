@@ -1,5 +1,7 @@
 package com.example.backend.services;
 
+import com.example.backend.DTO.ClienteDTO;
+import com.example.backend.configuration.KeycloakCommand;
 import com.example.backend.model.Cliente;
 import com.example.backend.model.Utente;
 import com.example.backend.repositories.ClienteRepository;
@@ -17,19 +19,23 @@ public class ClienteService {
     @Autowired
     ClienteRepository clienteRepository;
 
-    @Transactional
-    public Utente creaCliente(Cliente cliente) {
-        if (clienteRepository.existsByUsername(cliente.getUsername()))
-            throw new UtenteAlreadyExistingException("L'utente con username " +cliente.getUsername()+ " è già esistente!");
-        return clienteRepository.save(cliente);
-    }//CREATE
 
     @Transactional
-    public void aggiornaCliente(Cliente cliente) {
-        if (!clienteRepository.existsById(cliente.getId())) {
+    public Utente creaCliente(ClienteDTO cliente) {
+        if (clienteRepository.existsByUsername(cliente.getCliente().getUsername()))
+            throw new UtenteAlreadyExistingException("L'utente con username " +cliente.getCliente().getUsername()+ " è già esistente!");
+        KeycloakCommand.AddUser(cliente.getCliente(), cliente.getPassword());
+        return clienteRepository.save(cliente.getCliente());
+    }//CREATE
+
+
+
+    @Transactional
+    public void aggiornaCliente(ClienteDTO cliente) {
+        if (!clienteRepository.existsById(cliente.getCliente().getId())) {
             throw new UtenteNotExistingException("Utente non esistente!");
         }
-        clienteRepository.save(cliente);
+        clienteRepository.save(cliente.getCliente());
     }//UPDATE
 
     @Transactional

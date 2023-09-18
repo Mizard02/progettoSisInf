@@ -1,5 +1,6 @@
 package com.example.backend.controllers;
 
+import com.example.backend.DTO.ClienteDTO;
 import com.example.backend.model.Cliente;
 import com.example.backend.model.Utente;
 import com.example.backend.services.ClienteService;
@@ -18,16 +19,18 @@ public class ClienteController {
     @Autowired
     ClienteService clienteService;
 
+
     @PostMapping
-    public ResponseEntity<?> creaCliente(@RequestBody Cliente cliente) {
-        if(clienteService.existsByEmail(cliente.getEmail())) {
-            return new ResponseEntity<>(new ResponseMessage("L'utente con email: " +cliente.getEmail() + " è già esistente!"), HttpStatus.OK);
+    public ResponseEntity<?> creaCliente(@RequestBody ClienteDTO cliente) {
+        if(clienteService.existsByEmail(cliente.getCliente().getEmail())) {
+            return new ResponseEntity<>(new ResponseMessage("L'utente con email: " +cliente.getCliente().getEmail() + " è già esistente!"), HttpStatus.OK);
         }
         Utente risultato = clienteService.creaCliente(cliente);
         return new ResponseEntity<>(risultato.getId(), HttpStatus.OK);
     }//POST
 
 
+/*
     @PutMapping("/{id}")
     public ResponseEntity<?> aggiornaCliente(@PathVariable("id") String id, @RequestBody Cliente cliente) {
         if(!clienteService.existsById(Long.parseLong(id))) {
@@ -38,7 +41,7 @@ public class ClienteController {
         if (cliente.getCognome() != null) { daAggiornare.setCognome(cliente.getCognome()); }
         if (cliente.getEmail() != null) { daAggiornare.setEmail(cliente.getEmail()); }
         if (cliente.getUsername() != null) { daAggiornare.setUsername(cliente.getUsername()); }
-        if (cliente.getPassword() != null) { daAggiornare.setPassword(cliente.getPassword()); }
+        //if (cliente.getPassword() != null) { daAggiornare.setPassword(cliente.getPassword()); }
         if (cliente.getIBAN() != null) { daAggiornare.setIBAN(cliente.getIBAN()); }
         if (cliente.getDocumento_identita() != null) { daAggiornare.setDocumento_identita(cliente.getDocumento_identita()); }
         if (cliente.getResidenza() != null) { daAggiornare.setResidenza(cliente.getResidenza()); }
@@ -48,6 +51,8 @@ public class ClienteController {
         clienteService.aggiornaCliente(daAggiornare);
         return new ResponseEntity<>(daAggiornare.getId(), HttpStatus.OK);
     }//PUT
+
+ */
 
 
     @DeleteMapping("/{id}")

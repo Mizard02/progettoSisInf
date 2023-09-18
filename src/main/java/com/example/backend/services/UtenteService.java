@@ -1,5 +1,6 @@
 package com.example.backend.services;
 
+import com.example.backend.DTO.UtenteDTO;
 import com.example.backend.configuration.KeycloakCommand;
 import com.example.backend.model.Utente;
 import com.example.backend.repositories.UtenteRepository;
@@ -42,11 +43,11 @@ public class UtenteService {
     */
 
     @Transactional
-    public Utente creaUtente(Utente utente) {
-        if (utenteRepository.existsByUsername(utente.getUsername()))
-            throw new UtenteAlreadyExistingException("L'utente con username " +utente.getUsername()+ " è già esistente!");
-        KeycloakCommand.AddUser(utente, utente.getPassword());
-        return utenteRepository.save(utente);
+    public Utente creaUtente(UtenteDTO utente) {
+        if (utenteRepository.existsByUsername(utente.getUtente().getUsername()))
+            throw new UtenteAlreadyExistingException("L'utente con username " +utente.getUtente().getUsername()+ " è già esistente!");
+        KeycloakCommand.AddUser(utente.getUtente(), utente.getPassword());
+        return utenteRepository.save(utente.getUtente());
     }//CREATE
 
     @Transactional

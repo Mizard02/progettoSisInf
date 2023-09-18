@@ -1,5 +1,6 @@
 package com.example.backend.controllers;
 
+import com.example.backend.DTO.DipendenteDTO;
 import com.example.backend.model.Dipendente;
 import com.example.backend.model.Utente;
 import com.example.backend.services.DipendenteService;
@@ -18,14 +19,17 @@ public class DipendenteController {
     @Autowired
     DipendenteService dipendenteService;
 
+
     @PostMapping
-    public ResponseEntity<?> creaCliente(@RequestBody Dipendente dipendente) {
-        if(dipendenteService.existsByEmail(dipendente.getEmail())) {
-            return new ResponseEntity<>(new ResponseMessage("L'utente con email: " +dipendente.getEmail() + " è già esistente!"), HttpStatus.OK);
+    public ResponseEntity<?> creaCliente(@RequestBody DipendenteDTO dipendente) {
+        if(dipendenteService.existsByEmail(dipendente.getDipendente().getEmail())) {
+            return new ResponseEntity<>(new ResponseMessage("L'utente con email: " +dipendente.getDipendente().getEmail() + " è già esistente!"), HttpStatus.OK);
         }
         Utente risultato = dipendenteService.creaDipendente(dipendente);
         return new ResponseEntity<>(risultato.getId(), HttpStatus.OK);
     }//POST
+
+
 
 
 

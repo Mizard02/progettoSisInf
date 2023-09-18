@@ -63,9 +63,10 @@ public class Utente implements Serializable {
     @Column(name = "username", nullable = false)
     private String username;
 
-    @Basic
+    /*@Basic
     @Column(name = "password", nullable = false)
     private String password;
+     */
 
 
 }

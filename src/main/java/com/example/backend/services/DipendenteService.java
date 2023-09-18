@@ -1,5 +1,7 @@
 package com.example.backend.services;
 
+import com.example.backend.DTO.DipendenteDTO;
+import com.example.backend.configuration.KeycloakCommand;
 import com.example.backend.model.Cliente;
 import com.example.backend.model.Dipendente;
 import com.example.backend.model.Utente;
@@ -21,11 +23,14 @@ public class DipendenteService {
     DipendenteRepository dipendenteRepository;
 
     @Transactional
-    public Utente creaDipendente(Dipendente dipendente) {
-        if (dipendenteRepository.existsByEmail(dipendente.getEmail()))
-            throw new UtenteAlreadyExistingException("L'utente con username " +dipendente.getUsername()+ " è già esistente!");
-        return dipendenteRepository.save(dipendente);
+    public Utente creaDipendente(DipendenteDTO dipendente) {
+        if (dipendenteRepository.existsByEmail(dipendente.getDipendente().getEmail()))
+            throw new UtenteAlreadyExistingException("L'utente con username " +dipendente.getDipendente().getUsername()+ " è già esistente!");
+        KeycloakCommand.AddUser(dipendente.getDipendente(), dipendente.getPassword());
+        return dipendenteRepository.save(dipendente.getDipendente());
     }//CREATE
+
+
 
     @Transactional
     public void aggiornaDipendente(Dipendente dipendente) {

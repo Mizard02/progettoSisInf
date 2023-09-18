@@ -1,5 +1,6 @@
 package com.example.backend.controllers;
 
+import com.example.backend.DTO.UtenteDTO;
 import com.example.backend.model.Utente;
 import com.example.backend.services.UtenteService;
 import com.example.backend.support.ResponseMessage;
@@ -20,15 +21,15 @@ public class UtenteController {
     UtenteService utenteService;
 
     @PostMapping
-    public ResponseEntity<?> creaUtente(@RequestBody Utente utente) {
-        if(utenteService.existsByEmail(utente.getEmail())) {
-            return new ResponseEntity<>(new ResponseMessage("L'utente con email: " +utente.getEmail() + " è già esistente!"), HttpStatus.OK);
+    public ResponseEntity<?> creaUtente(@RequestBody UtenteDTO utente) {
+        if(utenteService.existsByEmail(utente.getUtente().getEmail())) {
+            return new ResponseEntity<>(new ResponseMessage("L'utente con email: " +utente.getUtente().getEmail() + " è già esistente!"), HttpStatus.OK);
         }
         Utente risultato = utenteService.creaUtente(utente);
         return new ResponseEntity<>(risultato.getId(), HttpStatus.OK);
     }//POST
 
-
+/*
     @PutMapping("/{id}")
     public ResponseEntity<?> aggiornaUtente(@PathVariable("id") String id, @RequestBody Utente utente) {
         if(!utenteService.existsById(Long.parseLong(id))) {
@@ -46,7 +47,7 @@ public class UtenteController {
         utenteService.aggiornaUtente(daAggiornare);
         return new ResponseEntity<>(daAggiornare.getId(), HttpStatus.OK);
     }//PUT
-
+*/
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> cancellaUtente(@PathVariable("id") String id) {
